@@ -390,7 +390,7 @@ export function AssetForm({ asset, open, onClose, onSaved }: AssetFormProps) {
             <div className="grid grid-cols-2 gap-4">
               <Input
                 label="Name *"
-                placeholder="e.g. MacBook Pro 14""
+                placeholder='e.g. MacBook Pro 14"'
                 error={errors.name?.message}
                 {...register("name")}
               />

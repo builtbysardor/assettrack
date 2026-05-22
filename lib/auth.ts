@@ -20,12 +20,8 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string;
-    role: "ADMIN" | "MANAGER" | "VIEWER";
-  }
-}
+type UserRole = "ADMIN" | "MANAGER" | "VIEWER";
+type AuthToken = { id?: string; role?: UserRole; [key: string]: unknown };
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -67,17 +63,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     jwt({ token, user }) {
+      const t = token as AuthToken;
       if (user) {
-        token.id = user.id;
-        token.role = user.role;
+        t.id = user.id;
+        t.role = user.role as UserRole;
       }
       return token;
     },
     session({ session, token }) {
-      if (token) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-      }
+      const t = token as AuthToken;
+      if (t.id) session.user.id = t.id;
+      if (t.role) session.user.role = t.role;
       return session;
     },
   },

@@ -12,34 +12,34 @@ export interface StatusColors {
 
 export const STATUS_COLORS: Record<AssetStatus, StatusColors> = {
   ACTIVE: {
-    bg: "rgba(16,185,129,0.10)",
-    border: "rgba(16,185,129,0.30)",
-    text: "#10B981",
-    label: "Active",
+    bg:     "rgba(0,0,0,0.06)",
+    border: "rgba(0,0,0,0.15)",
+    text:   "var(--accent)",
+    label:  "Active",
   },
   INACTIVE: {
-    bg: "rgba(107,123,118,0.10)",
-    border: "rgba(107,123,118,0.30)",
-    text: "#6B7B76",
-    label: "Inactive",
+    bg:     "rgba(138,138,132,0.08)",
+    border: "rgba(138,138,132,0.22)",
+    text:   "var(--t3)",
+    label:  "Inactive",
   },
   MAINTENANCE: {
-    bg: "rgba(245,158,11,0.10)",
-    border: "rgba(245,158,11,0.30)",
-    text: "#F59E0B",
-    label: "Maintenance",
+    bg:     "rgba(217,119,6,0.08)",
+    border: "rgba(217,119,6,0.22)",
+    text:   "var(--warn)",
+    label:  "Maintenance",
   },
   RETIRED: {
-    bg: "rgba(239,68,68,0.10)",
-    border: "rgba(239,68,68,0.30)",
-    text: "#EF4444",
-    label: "Retired",
+    bg:     "rgba(138,138,132,0.08)",
+    border: "rgba(138,138,132,0.22)",
+    text:   "var(--t3)",
+    label:  "Retired",
   },
   MISSING: {
-    bg: "rgba(139,92,246,0.10)",
-    border: "rgba(139,92,246,0.30)",
-    text: "#8B5CF6",
-    label: "Missing",
+    bg:     "rgba(220,38,38,0.08)",
+    border: "rgba(220,38,38,0.22)",
+    text:   "var(--err)",
+    label:  "Missing",
   },
 };
 
@@ -49,20 +49,20 @@ export interface StatusPillProps {
 }
 
 export function StatusPill({ status, className }: StatusPillProps) {
-  const colors = STATUS_COLORS[status];
+  const colors = STATUS_COLORS[status] ?? STATUS_COLORS.INACTIVE;
 
   return (
     <span
-      className={cn(
-        "inline-flex items-center px-2 py-0.5",
-        "text-[11px] font-medium uppercase tracking-wider",
-        "rounded-[6px] border",
-        className
-      )}
+      className={cn("inline-flex items-center whitespace-nowrap", className)}
       style={{
+        padding: "2px 8px",
+        borderRadius: 3,
         backgroundColor: colors.bg,
-        borderColor: colors.border,
+        border: `1px solid ${colors.border}`,
         color: colors.text,
+        fontSize: 11,
+        fontWeight: 500,
+        lineHeight: 1.6,
       }}
     >
       {colors.label}

@@ -92,7 +92,7 @@ export function Select({
 
         <AnimatePresence>
           {open && (
-            <RadixSelect.Portal forceMount>
+            <RadixSelect.Portal>
               <RadixSelect.Content
                 position="popper"
                 sideOffset={6}

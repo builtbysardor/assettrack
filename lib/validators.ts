@@ -8,37 +8,33 @@ export const AssetStatusEnum = z.enum([
   "MISSING",
 ]);
 
-export const createAssetSchema = z
-  .object({
-    name: z.string().min(1, "Name is required").max(200),
-    serialNumber: z.string().max(100).optional().nullable(),
-    categoryId: z.string().min(1, "Category is required"),
-    locationId: z.string().min(1, "Location is required"),
-    assignedTo: z.string().max(200).optional().nullable(),
-    status: AssetStatusEnum,
-    purchaseDate: z.string().optional().nullable(), // ISO date string
-    warrantyExpiry: z.string().optional().nullable(), // ISO date string
-    cost: z
-      .number()
-      .min(0, "Cost must be non-negative")
-      .optional()
-      .nullable(),
-    notes: z.string().max(2000).optional().nullable(),
-  })
-  .refine(
-    (data) => {
-      if (data.purchaseDate && data.warrantyExpiry) {
-        return new Date(data.warrantyExpiry) >= new Date(data.purchaseDate);
-      }
-      return true;
-    },
-    {
-      message: "Warranty expiry must be after purchase date",
-      path: ["warrantyExpiry"],
-    }
-  );
+const baseAssetSchema = z.object({
+  name: z.string().min(1, "Name is required").max(200),
+  serialNumber: z.string().max(100).optional().nullable(),
+  categoryId: z.string().min(1, "Category is required"),
+  locationId: z.string().min(1, "Location is required"),
+  assignedTo: z.string().max(200).optional().nullable(),
+  status: AssetStatusEnum,
+  purchaseDate: z.string().optional().nullable(),
+  warrantyExpiry: z.string().optional().nullable(),
+  cost: z.number().min(0, "Cost must be non-negative").optional().nullable(),
+  notes: z.string().max(2000).optional().nullable(),
+});
 
-export const updateAssetSchema = createAssetSchema.partial().extend({
+export const createAssetSchema = baseAssetSchema.refine(
+  (data) => {
+    if (data.purchaseDate && data.warrantyExpiry) {
+      return new Date(data.warrantyExpiry) >= new Date(data.purchaseDate);
+    }
+    return true;
+  },
+  {
+    message: "Warranty expiry must be after purchase date",
+    path: ["warrantyExpiry"],
+  }
+);
+
+export const updateAssetSchema = baseAssetSchema.partial().extend({
   status: AssetStatusEnum.optional(),
 });
 

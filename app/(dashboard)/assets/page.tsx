@@ -62,7 +62,7 @@ function AssetsContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [cardView, setCardView] = useState(false);
+  const [cardView, setCardView] = useState(true);
 
   // Modal/drawer state
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
@@ -274,7 +274,7 @@ function AssetsContent() {
                   <AssetCard
                     key={a.id}
                     asset={a}
-                    onClick={() => setSelectedAssetId(a.id)}
+                    onClick={() => router.push(`/assets/${a.id}`)}
                   />
                 ))}
               </div>
@@ -284,7 +284,7 @@ function AssetsContent() {
           <AssetTable
             data={assets}
             isLoading={loading}
-            onRowClick={(a) => setSelectedAssetId(a.id)}
+            onRowClick={(a) => router.push(`/assets/${a.id}`)}
             onEdit={(a) => {
               setEditingAsset(a);
               setFormOpen(true);

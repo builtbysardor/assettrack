@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── LIGHT (default) ─────────────────────────────────────────── */
+:root,
+[data-theme="light"] {
+  --bg-base:     #F7F7F5;
+  --bg-surface:  #FFFFFF;
+  --bg-elevated: #F0F0EE;
+  --bg-inset:    #E8E8E5;
+
+  --border-subtle:  #E4E4E1;
+  --border-default: #D4D4D0;
+  --border-strong:  #B8B8B3;
+
+  --text-primary:   #111110;
+  --text-secondary: #4A4A45;
+  --text-tertiary:  #8A8A84;
+  --text-disabled:  #C4C4BC;
+
+  /* Brand greens — kept for focus rings / CTA buttons */
+  --brand-50:  #ECFDF5;
+  --brand-100: #D1FAE5;
+  --brand-300: #6EE7B7;
+  --brand-400: #34D399;
+  --brand-500: #10B981;
+  --brand-600: #059669;
+  --brand-700: #047857;
+  --brand-900: #064E3B;
+
+  /* Semantic */
+  --success: #10B981;
+  --warning: #D97706;
+  --danger:  #DC2626;
+  --info:    #0284C7;
+
+  /* Design-system accent (black/white flip) */
+  --accent:  #111110;
+  --accent2: #4A4A45;
+
+  /* Shadows */
+  --shadow:   0 1px 2px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-h: 0 4px 16px rgba(0,0,0,0.11), 0 0 0 1px rgba(0,0,0,0.06);
+}
+
+/* ── DARK ────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg-base:     #111111;
+  --bg-surface:  #1A1A1A;
+  --bg-elevated: #222222;
+  --bg-inset:    #161616;
+
+  --border-subtle:  #2A2A2A;
+  --border-default: #333333;
+  --border-strong:  #444444;
+
+  --text-primary:   #F5F5F5;
+  --text-secondary: #A8A8A8;
+  --text-tertiary:  #666666;
+  --text-disabled:  #444444;
+
+  --brand-50:  #ECFDF5;
+  --brand-100: #D1FAE5;
+  --brand-300: #6EE7B7;
+  --brand-400: #34D399;
+  --brand-500: #10B981;
+  --brand-600: #059669;
+  --brand-700: #047857;
+  --brand-900: #064E3B;
+
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger:  #EF4444;
+  --info:    #38BDF8;
+
+  --accent:  #F5F5F5;
+  --accent2: #CCCCCC;
+
+  --shadow:   0 1px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03);
+  --shadow-h: 0 6px 24px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-inter, Inter, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+* { scrollbar-width: thin; scrollbar-color: var(--border-strong) var(--bg-base); }
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+/* Noise texture overlay — subtle */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+}
+
+/* Login animations */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeSlideLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes logoPop {
+  0%   { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+  70%  { transform: scale(1.08) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes spinAnim {
+  to { transform: rotate(360deg); }
+}
+
+.login-feature-item { animation: fadeSlideLeft 0.4s both; }
+.login-stat         { animation: fadeSlideUp  0.5s both; }
+.form-field         { animation: fadeSlideUp  0.45s both; }
+
+.login-btn {
+  position: relative; overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s !important;
+}
+.login-btn:hover  { transform: translateY(-1px) !important; }
+.login-btn:active { transform: translateY(1px) !important; }
+.login-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
+  background-size: 200% auto;
+  opacity: 0; transition: opacity 0.2s;
+}
+.login-btn:hover::after { opacity: 1; animation: shimmer 0.7s linear; }
+
+/* Page-title decoration */
+.page-title {
+  position: relative;
+  display: inline-block;
+  letter-spacing: -0.02em;
+}
+.page-title::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -4px;
+  width: 80px; height: 1px;
+  background: linear-gradient(90deg, var(--border-strong) 0%, transparent 100%);
+}
+
+@layer components {
+  .card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+  }
+  .card-hover {
+    transition: all 0.14s;
+  }
+  .card-hover:hover {
+    border-color: var(--border-default);
+    box-shadow: var(--shadow-h);
+    transform: translateY(-1px);
+  }
+  .input-base {
+    @apply w-full rounded text-sm px-3 py-2 placeholder:text-[var(--text-tertiary)] transition-colors duration-150;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+  }
+  .input-base:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+  }
+  [data-theme="dark"] .input-base:focus {
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
+  }
+  .tag-mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+  }
+}

@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  VIEWER
+}
+
+enum AssetStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+  RETIRED
+  MISSING
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String
+  passwordHash String
+  role         Role       @default(VIEWER)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  assets    Asset[]    @relation("CreatedBy")
+  auditLogs AuditLog[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  icon      String   @default("box")
+  color     String   @default("#10B981")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assets Asset[]
+}
+
+model Location {
+  id          String   @id @default(cuid())
+  building    String
+  room        String
+  floor       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assets Asset[]
+}
+
+model Asset {
+  id             String      @id @default(cuid())
+  tag            String      @unique
+  name           String
+  serialNumber   String?
+  categoryId     String
+  locationId     String
+  assignedTo     String?
+  status         AssetStatus @default(ACTIVE)
+  purchaseDate   DateTime?
+  warrantyExpiry DateTime?
+  cost           Decimal?    @db.Decimal(10, 2)
+  notes          String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  createdById    String
+
+  category  Category  @relation(fields: [categoryId], references: [id])
+  location  Location  @relation(fields: [locationId], references: [id])
+  createdBy User      @relation("CreatedBy", fields: [createdById], references: [id])
+
+  @@index([status])
+  @@index([tag])
+  @@index([warrantyExpiry])
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([createdById])
+}
+
+model AuditLog {
+  id        String      @id @default(cuid())
+  entity    String
+  entityId  String
+  action    AuditAction
+  changes   Json
+  userId    String
+  createdAt DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}

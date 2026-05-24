@@ -58,8 +58,12 @@ export default auth((req) => {
     }
   }
 
-  // Allow auth routes
-  if (pathname.startsWith("/api/auth") || pathname.startsWith("/login")) {
+  // Allow auth routes and public endpoints
+  if (
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/login") ||
+    pathname === "/api/health"
+  ) {
     return NextResponse.next();
   }
 

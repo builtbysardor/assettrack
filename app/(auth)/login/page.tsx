@@ -90,7 +90,7 @@ function LoginContent() {
 
   const loginForm = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "admin@assettrack.io", password: "" },
+    defaultValues: { email: "", password: "" },
   });
 
   const registerForm = useForm<RegisterValues>({
@@ -227,7 +227,7 @@ function LoginContent() {
             <form onSubmit={loginForm.handleSubmit(onLogin)} noValidate style={{ display: "flex", flexDirection: "column", gap: 13 }}>
               <div className="form-field" style={{ opacity: 0, animationDelay: "0.08s" }}>
                 <label htmlFor="email" style={{ display: "block", fontSize: 12, color: "var(--text-secondary)", marginBottom: 5, fontWeight: 500 }}>Email address</label>
-                <input id="email" type="email" placeholder="admin@assettrack.io" style={{ ...INP, borderColor: loginForm.formState.errors.email ? "var(--danger)" : "var(--border-default)" }} {...loginForm.register("email")} />
+                <input id="email" type="email" placeholder="admin@assettrack.com" style={{ ...INP, borderColor: loginForm.formState.errors.email ? "var(--danger)" : "var(--border-default)" }} {...loginForm.register("email")} />
                 <FieldError msg={loginForm.formState.errors.email?.message} />
               </div>
 

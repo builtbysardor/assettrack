@@ -10,8 +10,11 @@ import {
   Tag,
   MapPin,
   LogOut,
+  Users,
+  UserPlus,
+  UserMinus,
+  Building2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface SidebarUser {
   id: string;
@@ -25,10 +28,14 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Assets",    href: "/assets",    icon: Package },
-  { label: "Categories",href: "/categories",icon: Tag },
-  { label: "Locations", href: "/locations", icon: MapPin },
+  { label: "Dashboard",   href: "/dashboard",   icon: LayoutDashboard, section: "main" },
+  { label: "Assets",      href: "/assets",       icon: Package,         section: "assets" },
+  { label: "Categories",  href: "/categories",   icon: Tag,             section: "assets" },
+  { label: "Locations",   href: "/locations",    icon: MapPin,          section: "assets" },
+  { label: "Employees",   href: "/employees",    icon: Users,           section: "hr" },
+  { label: "Onboarding",  href: "/onboarding",   icon: UserPlus,        section: "hr" },
+  { label: "Offboarding", href: "/offboarding",  icon: UserMinus,       section: "hr" },
+  { label: "Departments", href: "/departments",  icon: Building2,       section: "hr" },
 ] as const;
 
 function useTheme() {
@@ -102,12 +109,22 @@ export default function Sidebar({ user }: SidebarProps) {
       </div>
 
       {/* Nav */}
-      <nav style={{ flex: 1, padding: "8px 8px" }} aria-label="Main navigation">
-        {navItems.map((item) => {
+      <nav style={{ flex: 1, padding: "8px 8px", overflowY: "auto" }} aria-label="Main navigation">
+        {navItems.map((item, idx) => {
           const active = isActive(item.href);
           const Icon = item.icon;
+          const prevSection = idx > 0 ? navItems[idx - 1].section : item.section;
+          const showSectionLabel = item.section !== "main" && item.section !== prevSection;
+
           return (
-            <SidebarItem key={item.href} href={item.href} label={item.label} icon={Icon} active={active} />
+            <div key={item.href}>
+              {showSectionLabel && (
+                <div style={{ padding: "12px 10px 4px", fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-tertiary)" }}>
+                  {item.section === "hr" ? "HR" : "Assets"}
+                </div>
+              )}
+              <SidebarItem href={item.href} label={item.label} icon={Icon} active={active} />
+            </div>
           );
         })}
       </nav>

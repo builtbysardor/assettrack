@@ -9,6 +9,7 @@ datasource db {
 
 enum Role {
   ADMIN
+  HR
   MANAGER
   VIEWER
 }
@@ -21,10 +22,37 @@ enum AssetStatus {
   MISSING
 }
 
-enum AuditAction {
-  CREATE
-  UPDATE
-  DELETE
+enum EmployeeStatus {
+  PENDING
+  ONBOARDING
+  ACTIVE
+  OFFBOARDING
+  INACTIVE
+}
+
+enum TaskType {
+  CREATE_LDAP_ACCOUNT
+  SEND_WELCOME_EMAIL
+  SETUP_EMAIL_ACCOUNT
+  ASSIGN_EQUIPMENT
+  GRANT_SYSTEM_ACCESS
+  COMPLETE_PAPERWORK
+  MANAGER_INTRODUCTION
+  IT_ORIENTATION
+  REVOKE_LDAP_ACCOUNT
+  REVOKE_SYSTEM_ACCESS
+  COLLECT_EQUIPMENT
+  FINAL_PAYROLL
+  EXIT_INTERVIEW
+  KNOWLEDGE_TRANSFER
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  SKIPPED
 }
 
 model User {
@@ -35,9 +63,8 @@ model User {
   role         Role       @default(VIEWER)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-
-  assets    Asset[]    @relation("CreatedBy")
-  auditLogs AuditLog[]
+  assets       Asset[]    @relation("CreatedBy")
+  auditLogs    AuditLog[]
 }
 
 model Category {
@@ -47,8 +74,7 @@ model Category {
   color     String   @default("#10B981")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  assets Asset[]
+  assets    Asset[]
 }
 
 model Location {
@@ -59,8 +85,7 @@ model Location {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  assets Asset[]
+  assets      Asset[]
 }
 
 model Asset {
@@ -79,10 +104,9 @@ model Asset {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   createdById    String
-
-  category  Category  @relation(fields: [categoryId], references: [id])
-  location  Location  @relation(fields: [locationId], references: [id])
-  createdBy User      @relation("CreatedBy", fields: [createdById], references: [id])
+  category       Category    @relation(fields: [categoryId], references: [id])
+  location       Location    @relation(fields: [locationId], references: [id])
+  createdBy      User        @relation("CreatedBy", fields: [createdById], references: [id])
 
   @@index([status])
   @@index([tag])
@@ -92,18 +116,98 @@ model Asset {
   @@index([createdById])
 }
 
-model AuditLog {
-  id        String      @id @default(cuid())
-  entity    String
-  entityId  String
-  action    AuditAction
-  changes   Json
-  userId    String
-  createdAt DateTime    @default(now())
+model Department {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  code        String     @unique
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  employees   Employee[]
+}
 
-  user User @relation(fields: [userId], references: [id])
+model Employee {
+  id               String           @id @default(cuid())
+  employeeId       String           @unique
+  firstName        String
+  lastName         String
+  email            String           @unique
+  phone            String?
+  departmentId     String
+  department       Department       @relation(fields: [departmentId], references: [id])
+  position         String
+  managerId        String?
+  manager          Employee?        @relation("Reports", fields: [managerId], references: [id])
+  reports          Employee[]       @relation("Reports")
+  startDate        DateTime
+  endDate          DateTime?
+  status           EmployeeStatus   @default(PENDING)
+  ldapDn           String?
+  ldapUsername     String?
+  ldapCreated      Boolean          @default(false)
+  welcomeEmailSent Boolean          @default(false)
+  avatarUrl       String?
+  notes           String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  onboardingTasks  OnboardingTask[]
+  offboardingTasks OffboardingTask[]
+  auditLogs        AuditLog[]
+
+  @@index([status])
+  @@index([departmentId])
+}
+
+model OnboardingTask {
+  id          String     @id @default(cuid())
+  employeeId  String
+  employee    Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  type        TaskType
+  status      TaskStatus @default(PENDING)
+  description String?
+  assignedTo  String?
+  dueDate     DateTime?
+  completedAt DateTime?
+  metadata    Json?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([employeeId])
+  @@index([status])
+}
+
+model OffboardingTask {
+  id          String     @id @default(cuid())
+  employeeId  String
+  employee    Employee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  type        TaskType
+  status      TaskStatus @default(PENDING)
+  description String?
+  assignedTo  String?
+  dueDate     DateTime?
+  completedAt DateTime?
+  metadata    Json?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([employeeId])
+  @@index([status])
+}
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  entity     String
+  entityId   String
+  action     String
+  changes    Json?
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id])
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  createdAt  DateTime  @default(now())
 
   @@index([entity, entityId])
   @@index([userId])
   @@index([createdAt])
+  @@index([employeeId])
 }

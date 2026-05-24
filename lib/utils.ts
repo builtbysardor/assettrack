@@ -23,3 +23,20 @@ export function isWarrantyExpired(date: Date | string | null | undefined): boole
 export function generateTag(count: number): string {
   return `AST-${String(count).padStart(4, "0")}`;
 }
+
+export function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+export function generateEmployeeId(count: number): string {
+  return `EMP-${String(count).padStart(4, "0")}`;
+}
+
+export function generateLdapUsername(firstName: string, lastName: string): string {
+  return `${firstName.toLowerCase()}.${lastName.toLowerCase()}`.replace(/[^a-z.]/g, "");
+}

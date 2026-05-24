@@ -1,30 +1,41 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export default auth((req) => {
-  const { nextUrl } = req;
+  const { pathname } = req.nextUrl;
   const session = req.auth;
-  const isLoggedIn = !!session;
-  const isAuthRoute = nextUrl.pathname.startsWith("/login");
-  const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth");
 
-  if (isApiAuthRoute) return NextResponse.next();
-
-  if (!isLoggedIn && !isAuthRoute) {
-    const loginUrl = new URL("/login", nextUrl);
-    loginUrl.searchParams.set("from", nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+  // Allow auth routes
+  if (pathname.startsWith("/api/auth") || pathname.startsWith("/login")) {
+    return NextResponse.next();
   }
 
-  if (isLoggedIn && isAuthRoute) {
-    return NextResponse.redirect(new URL("/dashboard", nextUrl));
+  // Require authentication
+  if (!session) {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  const role = session.user.role;
+
+  // HR-only routes
+  const hrRoutes = ["/employees", "/onboarding", "/offboarding", "/departments", "/hr"];
+  const isHrRoute = hrRoutes.some(r => pathname.startsWith(r)) ||
+    hrRoutes.some(r => pathname.startsWith("/api" + r));
+
+  if (isHrRoute && role === "VIEWER") {
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   return NextResponse.next();
 });
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.png$).*)"],
 };

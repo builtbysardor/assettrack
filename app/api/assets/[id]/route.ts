@@ -22,6 +22,9 @@ export async function GET(
       category: true,
       location: true,
       createdBy: { select: { name: true, email: true } },
+      assignedEmployee: {
+        select: { id: true, firstName: true, lastName: true, employeeId: true },
+      },
     },
   });
 
@@ -105,7 +108,13 @@ export async function PATCH(
       }),
       ...(data.notes !== undefined && { notes: data.notes ?? null }),
     },
-    include: { category: true, location: true },
+    include: {
+      category: true,
+      location: true,
+      assignedEmployee: {
+        select: { id: true, firstName: true, lastName: true, employeeId: true },
+      },
+    },
   });
 
   await writeAudit({

@@ -45,6 +45,9 @@ export async function GET(req: NextRequest) {
         category: true,
         location: true,
         createdBy: { select: { name: true, email: true } },
+        assignedEmployee: {
+          select: { id: true, firstName: true, lastName: true, employeeId: true },
+        },
       },
       orderBy: { [sort]: order },
       skip: (page - 1) * pageSize,

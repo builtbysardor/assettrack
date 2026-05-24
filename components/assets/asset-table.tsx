@@ -18,6 +18,7 @@ export type AssetWithRelations = Asset & {
   category: Category;
   location: Location;
   createdBy: { name: string; email: string };
+  assignedEmployee?: { id: string; firstName: string; lastName: string; employeeId: string } | null;
 };
 
 interface AssetTableProps {
@@ -102,13 +103,20 @@ export function AssetTable({
         );
       },
     }),
-    columnHelper.accessor("assignedTo", {
+    columnHelper.display({
+      id: "assignedTo",
       header: "Assigned To",
-      cell: (info) => (
-        <span className="text-[var(--text-secondary)]">
-          {info.getValue() ?? <span className="text-[var(--text-tertiary)]">—</span>}
-        </span>
-      ),
+      cell: (info) => {
+        const asset = info.row.original;
+        const displayName = asset.assignedEmployee
+          ? `${asset.assignedEmployee.firstName} ${asset.assignedEmployee.lastName}`
+          : asset.assignedTo;
+        return (
+          <span className="text-[var(--text-secondary)]">
+            {displayName ?? <span className="text-[var(--text-tertiary)]">—</span>}
+          </span>
+        );
+      },
     }),
     columnHelper.accessor("status", {
       header: "Status",

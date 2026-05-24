@@ -14,6 +14,7 @@ import {
   UserPlus,
   UserMinus,
   Building2,
+  LayoutGrid,
 } from "lucide-react";
 
 interface SidebarUser {
@@ -32,6 +33,7 @@ const navItems = [
   { label: "Assets",      href: "/assets",       icon: Package,         section: "assets" },
   { label: "Categories",  href: "/categories",   icon: Tag,             section: "assets" },
   { label: "Locations",   href: "/locations",    icon: MapPin,          section: "assets" },
+  { label: "HR Overview",  href: "/hr",           icon: LayoutGrid,      section: "hr" },
   { label: "Employees",   href: "/employees",    icon: Users,           section: "hr" },
   { label: "Onboarding",  href: "/onboarding",   icon: UserPlus,        section: "hr" },
   { label: "Offboarding", href: "/offboarding",  icon: UserMinus,       section: "hr" },

@@ -1,174 +1,196 @@
-# AssetTrack — IT Asset Management System
+# AssetTrack
 
-A production-grade, full-stack IT Asset Management web application built for professional use. Track hardware assets, manage categories and locations, monitor warranty expiries, and maintain a full audit trail — all in a polished dark-themed interface.
+> IT asset management and HR onboarding/offboarding in a single, self-hostable web app.
 
-## Screenshots
+![Build](https://img.shields.io/github/actions/workflow/status/your-org/assettrack/ci.yml?branch=main&label=build)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Next.js](https://img.shields.io/badge/Next.js-14-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
 
-| Dashboard | Assets List | Asset Detail |
-|-----------|-------------|--------------|
-| ![dashboard](docs/dashboard.png) | ![assets](docs/assets.png) | ![detail](docs/detail.png) |
+---
 
 ## Features
 
-- **Asset tracking** — Full lifecycle management with status tracking (Active, Inactive, Maintenance, Retired, Missing)
-- **Smart search** — Real-time debounced search across name, tag, serial number, and assignee
-- **Category & Location management** — Organize assets with colored categories and structured locations
-- **Audit trail** — Every create/update/delete is logged with the user, timestamp, and field-level diff
-- **Warranty monitoring** — Dashboard highlights expiring warranties; table rows flag expired ones in red
-- **CSV export** — Export filtered asset lists to CSV with one click
-- **QR-ready tags** — Auto-generated `AST-0001` style tags for every asset
-- **Role-based access** — ADMIN / MANAGER / VIEWER roles enforced on every API endpoint
-- **JWT auth** — Secure session via NextAuth v5 with HTTP-only cookies
+| Asset Management | HR & People |
+|---|---|
+| Track hardware/software by tag, serial, location | Employee lifecycle: onboarding → active → offboarding |
+| Asset categories with custom icons and colors | Onboarding and offboarding task checklists |
+| Assign assets directly to employees | LDAP/Active Directory account provisioning (or simulation) |
+| Warranty expiry tracking and alerts | Welcome email automation via SMTP |
+| Purchase cost records per asset | Department and reporting-line management |
+| Filter and search by status, category, location | Employee directory with status badges and avatar |
+| Dashboard charts and summary statistics | Audit trail per employee and per asset |
+| Full audit log for every create/update/delete | Manager hierarchy via self-referential relation |
+
+---
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|------------|
-| Framework | Next.js 14 (App Router, Server Components, Server Actions) |
-| Language | TypeScript strict mode |
-| Database | PostgreSQL via Prisma ORM |
-| Auth | NextAuth v5 (Auth.js) — Credentials + JWT |
-| Styling | Tailwind CSS with custom design tokens |
-| UI Primitives | Radix UI (Dialog, Select, Dropdown, Tooltip, Popover) |
-| Charts | Recharts |
-| Icons | Lucide React |
-| Animation | Framer Motion |
+|---|---|
+| Framework | Next.js 14 (App Router, Server Components) |
+| Language | TypeScript 5 (strict mode) |
+| ORM | Prisma 5 |
+| Database | PostgreSQL (Neon recommended for cloud) |
+| Auth | NextAuth v5 (JWT sessions, Prisma adapter) |
+| Styling | Tailwind CSS 3 + Radix UI primitives |
+| Charts | Recharts 2 |
 | Forms | React Hook Form + Zod |
-| Notifications | Sonner |
-| Table | TanStack Table v8 |
-| Dates | date-fns |
+| Tables | TanStack Table v8 |
+| Email | Nodemailer (SMTP) |
+| LDAP | ldapjs (optional, simulation mode by default) |
+| Testing | Vitest + Testing Library |
+| Animations | Framer Motion |
+
+---
 
 ## Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- pnpm (`npm install -g pnpm`)
-- Docker (for PostgreSQL)
+
+- Node.js >= 20
+- pnpm >= 10 (`npm install -g pnpm`)
+- PostgreSQL 15+ (local or [Neon](https://neon.tech) free tier)
 
 ### 1. Clone and install
 
 ```bash
+git clone https://github.com/your-org/assettrack.git
 cd assettrack
 pnpm install
 ```
 
-### 2. Start the database
+### 2. Configure environment
 
 ```bash
-docker compose up -d
+cp .env.example .env.local
 ```
 
-### 3. Configure environment
+Open `.env.local` and set at minimum:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/assettrack"
+AUTH_SECRET="<run: openssl rand -base64 32>"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+See the [Environment Variables](#environment-variables) table for the full list.
+
+### 3. Set up the database
 
 ```bash
-cp .env.example .env
-# Edit .env if needed (defaults work with docker-compose)
+pnpm prisma generate   # generates the Prisma client
+pnpm prisma db push    # creates tables (no migration history needed)
+pnpm prisma:seed       # seeds admin user and sample data
 ```
 
-### 4. Run migrations and seed
-
-```bash
-pnpm prisma:generate   # Generate Prisma client
-pnpm prisma:migrate    # Run migrations (creates tables)
-pnpm prisma:seed       # Seed with sample data
-```
-
-### 5. Start the dev server
+### 4. Start the dev server
 
 ```bash
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-## Default Credentials
-
-| Email | Password | Role |
-|-------|----------|------|
-| admin@assettrack.io | admin123 | ADMIN |
-
-## Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://assettrack:assettrack_dev@localhost:5432/assettrack` |
-| `AUTH_SECRET` | NextAuth secret (min 32 chars) | — |
-| `NEXTAUTH_URL` | App URL | `http://localhost:3000` |
-
-## Scripts
-
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
-| `pnpm start` | Start production server |
-| `pnpm typecheck` | TypeScript check (zero errors expected) |
-| `pnpm lint` | ESLint check |
-| `pnpm prisma:generate` | Regenerate Prisma client after schema changes |
-| `pnpm prisma:migrate` | Apply pending migrations |
-| `pnpm prisma:seed` | Seed sample data (idempotent) |
-| `pnpm prisma:studio` | Open Prisma Studio GUI |
-
-## Project Structure
-
-```
-assettrack/
-├── app/
-│   ├── (auth)/login/          # Login page
-│   ├── (dashboard)/           # Protected dashboard shell
-│   │   ├── layout.tsx         # Sidebar + main content frame
-│   │   ├── dashboard/         # Overview with charts + stats
-│   │   ├── assets/            # Asset list, CRUD, detail drawer
-│   │   ├── categories/        # Category management
-│   │   └── locations/         # Location management
-│   ├── api/                   # Route handlers
-│   │   ├── auth/[...nextauth] # NextAuth handler
-│   │   ├── assets/            # GET, POST, PATCH, DELETE, export CSV
-│   │   ├── categories/        # GET, POST, PATCH, DELETE
-│   │   ├── locations/         # GET, POST, PATCH, DELETE
-│   │   ├── dashboard/summary  # Aggregated stats
-│   │   └── audit/             # Audit log reader
-│   └── layout.tsx             # Root layout (fonts, providers, toaster)
-├── components/
-│   ├── ui/                    # Design system primitives
-│   ├── layout/                # Sidebar, TopBar
-│   ├── charts/                # BarChart, DonutChart wrappers
-│   ├── assets/                # AssetTable, AssetForm, AssetDetailDrawer
-│   ├── categories/            # CategoryForm
-│   └── locations/             # LocationForm
-├── lib/
-│   ├── auth.ts                # NextAuth config
-│   ├── db.ts                  # Prisma singleton
-│   ├── validators.ts          # Zod schemas (shared client/server)
-│   ├── audit.ts               # writeAudit() helper
-│   └── utils.ts               # cn(), formatCurrency(), formatDate()
-├── prisma/
-│   ├── schema.prisma          # Database schema
-│   └── seed.ts                # Sample data seeder
-├── styles/
-│   └── globals.css            # CSS variables + design tokens
-├── middleware.ts              # Auth route protection
-└── docker-compose.yml         # PostgreSQL service
-```
-
-## Roles & Permissions
-
-| Action | VIEWER | MANAGER | ADMIN |
-|--------|--------|---------|-------|
-| Read assets/categories/locations | ✅ | ✅ | ✅ |
-| Create/update assets | ❌ | ✅ | ✅ |
-| Create/update categories/locations | ❌ | ✅ | ✅ |
-| Delete any record | ❌ | ❌ | ✅ |
-
-## Design System
-
-The UI uses a deep charcoal canvas with emerald-teal brand colors (not lime, not bootstrap blue):
-
-- **Canvas**: `#0B0F0E` base → `#111816` surface → `#161F1C` elevated
-- **Brand**: `#10B981` primary, `#059669` pressed, `#047857` deep accent
-- **Typography**: Inter (UI) + JetBrains Mono (asset tags, numbers)
-- **Motion**: 150–200ms purposeful transitions, count-up stat animations, staggered table rows
+Open [http://localhost:3000](http://localhost:3000) and log in with the default admin credentials below.
 
 ---
 
-Built with Next.js · PostgreSQL · Prisma · NextAuth · Tailwind CSS
+## Environment Variables
+
+| Variable | Description | Required |
+|---|---|---|
+| `DATABASE_URL` | PostgreSQL connection string | Yes |
+| `AUTH_SECRET` | NextAuth secret, min 32 chars (`openssl rand -base64 32`) | Yes |
+| `NEXTAUTH_URL` | Canonical app URL (e.g. `https://app.example.com`) | Yes |
+| `LDAP_ENABLED` | Enable real LDAP integration (`true`/`false`, default `false`) | No |
+| `LDAP_URL` | LDAP server URL (e.g. `ldap://dc.company.com:389`) | No |
+| `LDAP_BIND_DN` | Service account distinguished name for LDAP bind | No |
+| `LDAP_BIND_PASSWORD` | Service account password | No |
+| `LDAP_BASE_DN` | Base DN for user objects | No |
+| `EMAIL_ENABLED` | Enable real email sending (`true`/`false`, default `false`) | No |
+| `SMTP_HOST` | SMTP server hostname | No |
+| `SMTP_PORT` | SMTP port (`587` for STARTTLS, `465` for SSL) | No |
+| `SMTP_USER` | SMTP login username | No |
+| `SMTP_PASS` | SMTP login password | No |
+| `EMAIL_FROM` | Display name and address for outgoing mail | No |
+
+When `LDAP_ENABLED=false` or `EMAIL_ENABLED=false`, the respective operations are logged to the console rather than executed — useful for development and demos.
+
+---
+
+## Architecture Overview
+
+```
+Browser
+  └── Next.js Middleware  (middleware.ts)
+        ├── Rate limiter  — 60 req/min per IP on all /api/* routes
+        ├── Auth gate     — redirects unauthenticated requests to /login
+        └── RBAC check    — VIEWER role blocked from HR routes
+              └── App Router  (app/)
+                    ├── Server Components  — SSR pages
+                    ├── Client Components  — interactive UI
+                    └── API Routes  (app/api/*)
+                          └── Prisma Client  (lib/db.ts)
+                                └── PostgreSQL
+```
+
+Sessions are JWT-based (no database session table). See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full project structure and design decisions.
+
+---
+
+## RBAC Roles
+
+| Role | Assets | Employees / HR | Assign Assets | Admin Settings |
+|---|---|---|---|---|
+| `ADMIN` | Full CRUD | Full CRUD | Yes | Yes |
+| `HR` | Read | Full CRUD | Yes | No |
+| `MANAGER` | Read | Read | Yes | No |
+| `VIEWER` | Read | No access | No | No |
+
+Roles are enforced at both the middleware layer (route-level) and within individual API route handlers.
+
+---
+
+## Default Credentials
+
+| Field | Value |
+|---|---|
+| Email | `admin@assettrack.com` |
+| Password | `Admin123!` |
+
+**Change these immediately in any non-development environment.**
+
+---
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `pnpm dev` | Start development server |
+| `pnpm build` | Generate Prisma client and build for production |
+| `pnpm start` | Start production server |
+| `pnpm typecheck` | TypeScript check (zero errors expected) |
+| `pnpm lint` | ESLint check |
+| `pnpm test` | Run test suite (Vitest) |
+| `pnpm test:coverage` | Run tests with coverage report |
+| `pnpm prisma:generate` | Regenerate Prisma client after schema changes |
+| `pnpm prisma:migrate` | Apply pending migrations (dev only) |
+| `pnpm prisma:seed` | Seed sample data (idempotent) |
+| `pnpm prisma:studio` | Open Prisma Studio GUI |
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming conventions, commit message format, and the PR checklist.
+
+---
+
+## Deployment
+
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for Vercel and Neon PostgreSQL deployment instructions.
+
+---
+
+## License
+
+[MIT](LICENSE)

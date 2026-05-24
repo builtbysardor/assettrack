@@ -38,6 +38,10 @@ export function Modal({
   size = "md",
   footer,
 }: ModalProps) {
+  // Always call hooks at top level (Rules of Hooks)
+  const titleId = React.useId();
+  const descriptionId = React.useId();
+
   const handleChange = (o: boolean) => {
     if (!o) {
       onClose?.();
@@ -57,8 +61,6 @@ export function Modal({
   }
 
   // Standalone mode: render full modal
-  const titleId = React.useId();
-  const descriptionId = React.useId();
 
   return (
     <Dialog.Root open={open} onOpenChange={handleChange}>

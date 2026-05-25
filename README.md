@@ -154,8 +154,8 @@ Roles are enforced at both the middleware layer (route-level) and within individ
 
 | Field | Value |
 |---|---|
-| Email | `admin@assettrack.com` |
-| Password | `Admin@2026!` |
+| Email | `admin@assettrack.io` |
+| Password | `admin2000` |
 
 **Change these immediately in any non-development environment.**
 

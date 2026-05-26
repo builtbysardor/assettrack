@@ -1,11 +1,34 @@
+<div align="center">
+
 # AssetTrack
 
-> IT asset management and HR onboarding/offboarding in a single, self-hostable web app.
+**IT asset management and HR onboarding/offboarding in a single, self-hostable web app.**
 
 ![Build](https://img.shields.io/github/actions/workflow/status/your-org/assettrack/ci.yml?branch=main&label=build)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+
+<br/>
+
+![AssetTrack Demo](docs/screenshots/demo_animation.svg)
+
+<br/>
+
+</div>
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="docs/screenshots/02_dashboard.png" alt="Dashboard" width="48%" style="border-radius:8px;margin:4px;">
+  <img src="docs/screenshots/03_assets.png" alt="Assets" width="48%" style="border-radius:8px;margin:4px;">
+  <img src="docs/screenshots/04_employees.png" alt="Employees" width="48%" style="border-radius:8px;margin:4px;">
+  <img src="docs/screenshots/05_onboarding.png" alt="Onboarding" width="48%" style="border-radius:8px;margin:4px;">
+  <img src="docs/screenshots/06_audit.png" alt="Audit Log" width="48%" style="border-radius:8px;margin:4px;">
+  <img src="docs/screenshots/01_login.png" alt="Login" width="48%" style="border-radius:8px;margin:4px;">
+</div>
 
 ---
 

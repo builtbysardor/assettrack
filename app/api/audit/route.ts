@@ -6,6 +6,7 @@ import { z } from "zod";
 const auditQuerySchema = z.object({
   entity: z.string().optional(),
   entityId: z.string().optional(),
+  action: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(25),
 });
@@ -25,21 +26,30 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const { entity, entityId, page, pageSize } = parsed.data;
+  const { entity, entityId, action, page, pageSize } = parsed.data;
 
   const where = {
     ...(entity && { entity }),
     ...(entityId && { entityId }),
+    ...(action && { action }),
   };
 
-  const [items, total] = await Promise.all([
+  const [data, total] = await Promise.all([
     prisma.auditLog.findMany({
       where,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
       take: pageSize,
       include: {
-        user: { select: { name: true, email: true } },
+        user: { select: { id: true, name: true, email: true } },
+        employee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            employeeId: true,
+          },
+        },
       },
     }),
     prisma.auditLog.count({ where }),
@@ -47,7 +57,7 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     ok: true,
-    items,
+    data,
     total,
     page,
     pageSize,

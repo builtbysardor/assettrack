@@ -51,7 +51,7 @@ jobs:
         run: echo "url=$(cat deployment-url.txt)" >> $GITHUB_OUTPUT
 
       - name: Post preview URL as PR comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |

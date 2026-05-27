@@ -4,7 +4,7 @@
 
 **IT asset management and HR onboarding/offboarding in a single, self-hostable web app.**
 
-![Build](https://img.shields.io/github/actions/workflow/status/your-org/assettrack/ci.yml?branch=main&label=build)
+![Build](https://img.shields.io/github/actions/workflow/status/builtbysardor/assettrack/ci.yml?branch=main&label=build)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
@@ -78,7 +78,7 @@
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/your-org/assettrack.git
+git clone https://github.com/builtbysardor/assettrack.git
 cd assettrack
 pnpm install
 ```
